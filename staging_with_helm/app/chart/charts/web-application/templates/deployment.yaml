@@ -48,7 +48,7 @@ spec:
         {{- end }}
         {{- if not $envVars.appURI}}
         - name: APPLICATION_URI
-          value: {{ .Values.global.destination }}
+          value: {{ include "web-application.applicationUri" . }}
         {{- end }}
         #- name: DEV_ENV
         #  valueFrom:
@@ -69,7 +69,7 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: destination
-              key: {{ include "web-application.destination" . }}
+              key: {{ .Values.global.destination }}
         livenessProbe:
         {{- if .Values.health_check.liveness.path }}
           httpGet:
