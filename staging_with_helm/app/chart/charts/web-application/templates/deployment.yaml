@@ -70,7 +70,6 @@ spec:
             configMapKeyRef:
               name: destination
               key: {{ include "web-application.destination" . }}
-            {{- end }}
         livenessProbe:
         {{- if .Values.health_check.liveness.path }}
           httpGet:
