@@ -48,7 +48,7 @@ spec:
         {{- end }}
         {{- if not $envVars.appURI}}
         - name: APPLICATION_URI
-          value: {{ include "web-application.applicationUri" . }}
+          value: {{ .Values.global.destination }}
         {{- end }}
         #- name: DEV_ENV
         #  valueFrom:
