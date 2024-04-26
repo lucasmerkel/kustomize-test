@@ -1,0 +1,76 @@
+global:
+  domain: f98acbb.kyma.ondemand.com
+  imagePullSecret: {}
+srv:
+  bindings:
+    db:
+      fromSecret: orders-db
+    auth:
+      serviceInstanceName: xsuaa
+    destination:
+      serviceInstanceName: destination
+  image:
+    repository: merkellu/orders-srv
+    tag: latest
+  resources:
+    limits:
+      ephemeral-storage: 1G
+      memory: 500M
+    requests:
+      ephemeral-storage: 1G
+      cpu: 500m
+      memory: 500M
+  health_check:
+    liveness:
+      path: /
+    readiness:
+      path: /
+  additionalVolumes:
+    - name: connectivity-secret
+      volumeMount:
+        mountPath: /bindings/connectivity
+        readOnly: true
+      projected:
+        sources:
+          - secret:
+              name: orders-connectivity-binding
+              optional: false
+          - secret:
+              name: orders-connectivity-binding
+              optional: false
+              items:
+                - key: token_service_url
+                  path: url
+          - configMap:
+              name: orders-connectivity-proxy-info
+              optional: false
+hana_deployer:
+  image:
+    repository: merkellu/orders-hana-deployer
+    tag: latest
+  bindings:
+    hana:
+      fromSecret: orders-db
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 1G
+    requests:
+      cpu: 1000m
+      memory: 1G
+xsuaa:
+  serviceOfferingName: xsuaa
+  servicePlanName: application
+  parameters:
+    xsappname: orders
+  config: xs-security.json
+destination:
+  serviceOfferingName: destination
+  servicePlanName: lite
+  parameters:
+    version: 1.0.0
+connectivity:
+  serviceOfferingName: connectivity
+  servicePlanName: connectivity_proxy
+  secretName: orders-connectivity-binding
+  configMapName: orders-connectivity-proxy-info
